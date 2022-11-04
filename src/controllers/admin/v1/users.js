@@ -1,7 +1,7 @@
-const User = require('../../models/user')
-const response = require('../../services/Response')
+const User = require('../../../models/user')
+const response = require('../../../services/Response')
 // const mongoose = require('mongoose')
-const Transformer = require('../../transformer/user')
+const Transformer = require('../../../transformer/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 

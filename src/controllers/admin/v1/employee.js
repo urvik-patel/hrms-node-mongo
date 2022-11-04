@@ -1,5 +1,5 @@
-const Employees = require('../../models/employees')
-const response = require('../../services/Response')
+const Employees = require('../../../models/employees')
+const response = require('../../../services/Response')
 const bcrypt = require('bcrypt')
 // const jwt = require('jsonwebtoken')
 

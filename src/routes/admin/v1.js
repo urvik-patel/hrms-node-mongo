@@ -1,8 +1,8 @@
 'use strict'
 
 const router = require('express').Router()
-const user = require('../../controllers/v1/users')
-const employee = require('../../controllers/v1/employee')
+const user = require('../../controllers/admin/v1/users')
+const employee = require('../../controllers/admin/v1/employee')
 const { validate } = require('../../validation/index')
 const userValidator = require('../../validation/user')
 const jwtValidator = require('../../middleware/adminValidation')
@@ -16,4 +16,5 @@ router.delete('/user/:id', jwtValidator.validateAPI, user.deleteUser)
 router.post('/user/login', user.signIn)
 
 router.post('/employee', jwtValidator.validateAPI, employee.createEmployee)
+
 module.exports = router

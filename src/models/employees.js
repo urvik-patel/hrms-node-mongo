@@ -20,6 +20,10 @@ const EmployeesSchema = new mongoose.Schema({
   password: {
     type: String
   },
+  roleId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'UserRole'
+  },
   createdAt: {
     type: Date,
     required: true,
@@ -45,6 +49,6 @@ EmployeesSchema.method('toJSON', function () {
   return object
 })
 
-const Employees = mongoose.model('employees', EmployeesSchema)
+const Employees = mongoose.model('Employees', EmployeesSchema)
 
 module.exports = Employees

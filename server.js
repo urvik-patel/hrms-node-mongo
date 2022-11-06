@@ -35,6 +35,8 @@ const IndexRoute = require('@root/src/routes')
 
 app.use('/', IndexRoute)
 
+require('./src/config/database')
+
 app.use((err, req, res, next) => {
   if (err) {
     return successResponseWithoutData(res, err.message, FAIL)

@@ -1,4 +1,5 @@
 const User = require('../../../models/user')
+const UserRoles = require('../../../models/userRoles')
 const response = require('../../../services/Response')
 // const mongoose = require('mongoose')
 const Transformer = require('../../../transformer/user')
@@ -8,14 +9,11 @@ const jwt = require('jsonwebtoken')
 module.exports = {
   findAll: async (req, res, next) => {
     try {
-      const { page = 1, limit = 10, search, gender, sort = '_id', order = 'DESC' } = req.headers
+      const { page = 1, limit = 10, search, sort = '_id', order = 'DESC' } = req.headers
       // await User.createIndex({ title: 'firstName'})
       var query = {}
       if (search) {
         query.firstName = `/.*${search}+.*/i`
-      }
-      if (gender) {
-        query.gender = `/${gender}/i`
       }
       const countData = await User.countDocuments(query)
       if (!countData) {
@@ -95,18 +93,32 @@ module.exports = {
 
   signIn: async (req, res, next) => {
     try {
-      const userData = await User.findOne({ email: req.body.email })
+      const userData = await User.findOne({ email: req.body.email }).populate('roleId')
       if (!userData) {
         response.errorResponseData(res, 'User does not exist with this email id', 404)
       }
       if (!userData.comparePassword(req.body.password)) {
         response.errorResponseData(res, 'You are unauthorized!', 401)
       }
-      const token = jwt.sign({ email: userData.email, name: userData.name, _id: userData._id }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' })
+      const token = jwt.sign({ email: userData.email, name: userData.name, _id: userData._id, role: userData.roleId?.role }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' })
       response.successResponseData(res, { _id: userData._id, email: userData.email, name: userData.name, token }, 200, 'Logged in successfully!')
     } catch (error) {
       console.error(error)
       response.errorResponseData(res, error)
     }
-  }
+  },
+
+  createRole: async (req, res, next) => {
+    try {
+      const userRoleData = new UserRoles({
+        role: req.body.role
+      })
+
+      const data = await userRoleData.save(userRoleData)
+      response.successResponseData(res, data, 201, 'User role has been created successfully')
+    } catch (error) {
+      console.log('error', error)
+      response.errorResponseData(res, error)
+    }
+  },
 }

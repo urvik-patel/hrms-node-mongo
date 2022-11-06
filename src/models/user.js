@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
   },
   roleId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'UserRoles'
+    ref: 'UserRole'
   },
   createdAt: {
     type: Date,
@@ -43,6 +43,6 @@ UserSchema.methods.comparePassword = function (pwd) {
   return bcrypt.compareSync(pwd, this.password)
 }
 
-const User = mongoose.model('user', UserSchema)
+const User = mongoose.model('User', UserSchema)
 
 module.exports = User

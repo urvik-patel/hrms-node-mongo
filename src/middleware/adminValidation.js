@@ -5,8 +5,7 @@ exports.validateAPI = (req, res, next) => {
     response.errorResponseData(res, 'Not getting token...', 401)
   }
   const verified = jwt.verify(req.headers.token, process.env.JWT_SECRET_KEY)
-  console.log(verified)
-  if (verified) {
+  if (verified && verified.role && verified.role == 'admin') {
     next()
   } else {
     response.errorResponseData(res, 'You are not authorized!', 401)

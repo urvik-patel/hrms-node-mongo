@@ -121,4 +121,14 @@ module.exports = {
       response.errorResponseData(res, error)
     }
   },
+
+  roleList: async (req, res, next) => {
+    try {
+      const data = await UserRoles.find()
+      response.successResponseData(res, data, 200, 'success')
+    } catch (error) {
+      console.log('error', error)
+      response.errorResponseData(res, error)
+    }
+  }
 }

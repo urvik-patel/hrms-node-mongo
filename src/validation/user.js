@@ -1,4 +1,3 @@
-const { string } = require('joi')
 const Joi = require('joi')
 
 exports.addUser = Joi.object()
@@ -29,13 +28,13 @@ exports.updateUser = Joi.object()
       .required()
   })
 
-  exports.addUserRole = Joi.object()
+exports.addUserRole = Joi.object()
   .keys({
     role: Joi.string()
       .required()
   })
 
-  exports.login = Joi.object()
+exports.login = Joi.object()
   .keys({
     email: Joi.string()
       .required()
@@ -44,7 +43,7 @@ exports.updateUser = Joi.object()
       .required()
   })
 
-  exports.addEmployee = Joi.object()
+exports.addEmployee = Joi.object()
   .keys({
     firstName: Joi.string()
       .required(),
@@ -58,5 +57,11 @@ exports.updateUser = Joi.object()
       .required(),
     password: Joi.string(),
     roleId: Joi.string()
+      .required()
+  })
+
+exports.leaveStatusUpdate = Joi.object()
+  .keys({
+    leaveStatus: Joi.string()
       .required()
   })

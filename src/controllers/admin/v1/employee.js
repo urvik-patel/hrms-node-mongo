@@ -1,4 +1,5 @@
 const Employees = require('../../../models/employees')
+const EmployeeLeaves = require('../../../models/employeeLeaves')
 const response = require('../../../services/Response')
 const bcrypt = require('bcrypt')
 // const jwt = require('jsonwebtoken')
@@ -28,6 +29,49 @@ module.exports = {
     try {
       const employeeData = await Employees.find()
       response.successResponseData(res, employeeData, 200, 'success')
+    } catch (error) {
+      console.log('error', error)
+      response.errorResponseData(res, error)
+    }
+  },
+
+  listOfLeaves: async (req, res, next) => {
+    try {
+      const { status, page = 1, limit = 10, sort = 'createdAt', order = 'DESC' } = req.headers
+      var query = {}
+      if (status) {
+        query.leaveStatus = status.toLowerCase()
+      }
+      const countData = await EmployeeLeaves.countDocuments(query)
+      if (!countData) {
+        response.successResponseWithoutData(res, 'No data found', 200)
+      }
+      const offset = 0 + (+limit * (+page - 1))
+      const totalPages = Math.ceil(countData / limit)
+
+      var sortObject = {}
+      sortObject[sort] = order
+      const data = await EmployeeLeaves.find(query).limit(limit).skip(offset).sort(sortObject)
+      // const leaveList = Transformer.userList(data)
+      response.successResponseData(res, data, 200, 'success', { totalPages: totalPages, currentPage: page, recordsPerPage: limit })
+    } catch (error) {
+      console.log('error', error)
+      response.errorResponseData(res, error)
+    }
+  },
+
+  leaveStatusUpdate: async (req, res, next) => {
+    try {
+      const { _id } = req.params
+      req.body.leaveStatus = req.body.leaveStatus.toLowerCase()
+      const leaveStatusOld = await EmployeeLeaves.findById(_id)
+
+      if (req.body.leaveStatus === leaveStatusOld.leaveStatus) {
+        response.successResponseWithoutData(res, 'You can not update to the same status', 400)
+      }
+
+      const updatedData = await EmployeeLeaves.findByIdAndUpdate(_id, req.body, { useFindAndModify: false, new: true })
+      response.successResponseData(res, updatedData, 200, 'Leave status has been updated successfully!')
     } catch (error) {
       console.log('error', error)
       response.errorResponseData(res, error)

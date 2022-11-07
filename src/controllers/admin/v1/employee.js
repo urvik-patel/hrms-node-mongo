@@ -18,20 +18,20 @@ module.exports = {
       })
 
       const data = await employeeData.save(employeeData)
-      response.successResponseData(res, data, 201, 'success')
+      return response.successResponseData(res, data, 201, 'success')
     } catch (error) {
       console.log('error', error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
   listOfEmployees: async (req, res, next) => {
     try {
       const employeeData = await Employees.find()
-      response.successResponseData(res, employeeData, 200, 'success')
+      return response.successResponseData(res, employeeData, 200, 'success')
     } catch (error) {
       console.log('error', error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
@@ -44,7 +44,7 @@ module.exports = {
       }
       const countData = await EmployeeLeaves.countDocuments(query)
       if (!countData) {
-        response.successResponseWithoutData(res, 'No data found', 200)
+        return response.successResponseWithoutData(res, 'No data found', 200)
       }
       const offset = 0 + (+limit * (+page - 1))
       const totalPages = Math.ceil(countData / limit)
@@ -53,10 +53,10 @@ module.exports = {
       sortObject[sort] = order
       const data = await EmployeeLeaves.find(query).limit(limit).skip(offset).sort(sortObject)
       // const leaveList = Transformer.userList(data)
-      response.successResponseData(res, data, 200, 'success', { totalPages: totalPages, currentPage: page, recordsPerPage: limit })
+      return response.successResponseData(res, data, 200, 'success', { totalPages: totalPages, currentPage: page, recordsPerPage: limit })
     } catch (error) {
       console.log('error', error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
@@ -67,14 +67,14 @@ module.exports = {
       const leaveStatusOld = await EmployeeLeaves.findById(_id)
 
       if (req.body.leaveStatus === leaveStatusOld.leaveStatus) {
-        response.successResponseWithoutData(res, 'You can not update to the same status', 400)
+        return response.successResponseWithoutData(res, 'You can not update to the same status', 400)
       }
 
       const updatedData = await EmployeeLeaves.findByIdAndUpdate(_id, req.body, { useFindAndModify: false, new: true })
-      response.successResponseData(res, updatedData, 200, 'Leave status has been updated successfully!')
+      return response.successResponseData(res, updatedData, 200, 'Leave status has been updated successfully!')
     } catch (error) {
       console.log('error', error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   }
 }

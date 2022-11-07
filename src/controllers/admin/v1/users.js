@@ -17,7 +17,7 @@ module.exports = {
       }
       const countData = await User.countDocuments(query)
       if (!countData) {
-        response.successResponseWithoutData(res, 'No data found', 200)
+        return response.successResponseWithoutData(res, 'No data found', 200)
       }
       const offset = 0 + (+limit * (+page - 1))
       const totalPages = Math.ceil(countData / limit)
@@ -26,10 +26,10 @@ module.exports = {
       sortObject[sort] = order
       const data = await User.find(query).limit(limit).skip(offset).sort(sortObject)
       const userList = Transformer.userList(data)
-      response.successResponseData(res, userList, 200, 'success', { totalPages: totalPages, currentPage: page, recordsPerPage: limit })
+      return response.successResponseData(res, userList, 200, 'success', { totalPages: totalPages, currentPage: page, recordsPerPage: limit })
     } catch (error) {
       console.log(error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
@@ -43,9 +43,9 @@ module.exports = {
         })
       }
       const data = await User.findById(id)
-      response.successResponseData(res, data, 200, 'success')
+      return response.successResponseData(res, data, 200, 'success')
     } catch (error) {
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
@@ -60,10 +60,10 @@ module.exports = {
       })
 
       const data = await userData.save(userData)
-      response.successResponseData(res, data, 201, 'success')
+      return response.successResponseData(res, data, 201, 'success')
     } catch (error) {
       console.log('error', error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
@@ -71,10 +71,10 @@ module.exports = {
     try {
       const { id } = req.params
       const data = await User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-      response.successResponseData(res, data, 200, 'success')
+      return response.successResponseData(res, data, 200, 'success')
     } catch (error) {
       console.log(error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
@@ -82,12 +82,12 @@ module.exports = {
     try {
       const { id } = req.params
       if (!id) {
-        response.errorResponseData(res, null, 400, 'Some of the required fields are missing.')
+        return response.errorResponseData(res, null, 400, 'Some of the required fields are missing.')
       }
       const data = await User.findByIdAndRemove(id, { useFindAndModify: false })
-      response.successResponseData(res, data, 200, 'success')
+      return response.successResponseData(res, data, 200, 'success')
     } catch (error) {
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
@@ -95,16 +95,16 @@ module.exports = {
     try {
       const userData = await User.findOne({ email: req.body.email }).populate('roleId')
       if (!userData) {
-        response.errorResponseData(res, 'User does not exist with this email id', 404)
+        return response.errorResponseData(res, 'User does not exist with this email id', 404)
       }
       if (!userData.comparePassword(req.body.password)) {
-        response.errorResponseData(res, 'You are unauthorized!', 401)
+        return response.errorResponseData(res, 'You are unauthorized!', 401)
       }
       const token = jwt.sign({ email: userData.email, name: userData.name, _id: userData._id, role: userData.roleId?.role }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' })
-      response.successResponseData(res, { _id: userData._id, email: userData.email, name: userData.name, token }, 200, 'Logged in successfully!')
+      return response.successResponseData(res, { _id: userData._id, email: userData.email, name: userData.name, token }, 200, 'Logged in successfully!')
     } catch (error) {
       console.error(error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
@@ -115,20 +115,20 @@ module.exports = {
       })
 
       const data = await userRoleData.save(userRoleData)
-      response.successResponseData(res, data, 201, 'User role has been created successfully')
+      return response.successResponseData(res, data, 201, 'User role has been created successfully')
     } catch (error) {
       console.log('error', error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   },
 
   roleList: async (req, res, next) => {
     try {
       const data = await UserRoles.find()
-      response.successResponseData(res, data, 200, 'success')
+      return response.successResponseData(res, data, 200, 'success')
     } catch (error) {
       console.log('error', error)
-      response.errorResponseData(res, error)
+      return response.errorResponseData(res, error)
     }
   }
 }

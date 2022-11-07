@@ -5,16 +5,26 @@ const user = require('../../controllers/admin/v1/users')
 const employee = require('../../controllers/admin/v1/employee')
 const { validate } = require('../../validation/index')
 const userValidator = require('../../validation/user')
-const jwtValidator = require('../../middleware/adminValidation')
+const adminValidator = require('../../middleware/adminValidation')
 
 // Admin Routes will be define here
-router.get('/user', jwtValidator.validateAPI, user.findAll)
-router.get('/user/:id', jwtValidator.validateAPI, user.getOneUser)
-router.post('/user', validate(userValidator.addUser), jwtValidator.validateAPI, user.createUser)
-router.put('/user/:id', validate(userValidator.updateUser), jwtValidator.validateAPI, user.updateUser)
-router.delete('/user/:id', jwtValidator.validateAPI, user.deleteUser)
-router.post('/user/login', user.signIn)
+//GET User List
+router.get('/user', adminValidator.validateAPI, user.findAll)
+//GET one User
+router.get('/user/:id', adminValidator.validateAPI, user.getOneUser)
+//ADD new User
+router.post('/user', validate(userValidator.addUser), adminValidator.validateAPI, user.createUser)
+//UPDATE User Details - Admin
+router.put('/user/:id', validate(userValidator.updateUser), adminValidator.validateAPI, user.updateUser)
+//DELETE User
+router.delete('/user/:id', adminValidator.validateAPI, user.deleteUser)
+//Admin Login
+router.post('/user/login', validate(userValidator.login), user.signIn)
+//ADD User Role
+router.post('/userrole', validate(userValidator.addUserRole),  adminValidator.validateAPI, user.createRole)
 
-router.post('/employee', jwtValidator.validateAPI, employee.createEmployee)
-
+//ADD new Employee
+router.post('/employee', validate(userValidator.addEmployee), adminValidator.validateAPI, employee.createEmployee)
+//GET Employee List
+router.get('/employee', adminValidator.validateAPI, employee.listOfEmployees)
 module.exports = router

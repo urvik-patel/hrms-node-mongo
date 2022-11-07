@@ -25,6 +25,6 @@ UserRoleSchema.method('toJSON', function () {
   return object
 })
 
-const UserRoles = mongoose.model('userRole', UserRoleSchema)
+const UserRoles = mongoose.model('UserRole', UserRoleSchema)
 
 module.exports = UserRoles

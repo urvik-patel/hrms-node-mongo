@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const response = require('../services/Response')
-exports.validateAPI = (req, res, next) => {
+exports.isSignedIn = (req, res, next) => {
   if (!req.headers.token) {
     response.errorResponseData(res, 'Not getting token...', 401)
   }

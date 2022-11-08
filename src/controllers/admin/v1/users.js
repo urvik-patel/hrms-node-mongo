@@ -101,7 +101,9 @@ module.exports = {
         return response.errorResponseData(res, 'You are unauthorized!', 401)
       }
       const token = jwt.sign({ email: userData.email, name: userData.name, _id: userData._id, role: userData.roleId?.role }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' })
-      return response.successResponseData(res, { _id: userData._id, email: userData.email, name: userData.name, token }, 200, 'Logged in successfully!')
+      userData.token = token
+      const userLogin = Transformer.userLogin(userData)
+      return response.successResponseData(res, userLogin, 200, 'Logged in successfully!')
     } catch (error) {
       console.error(error)
       return response.errorResponseData(res, error)

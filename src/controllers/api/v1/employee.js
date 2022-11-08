@@ -3,6 +3,8 @@ const EmployeeLeaves = require('../../../models/employeeLeaves')
 const EmployeeAttendance = require('../../../models/employeeAttendance')
 const response = require('../../../services/Response')
 const mailMiddleware = require('../../../middleware/nodemailer')
+const Transformer = require('../../../transformer/employee')
+
 // const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const moment = require('moment')
@@ -14,11 +16,18 @@ module.exports = {
       if (!employeeData) {
         return response.errorResponseData(res, res.__('Employee does not exist with this email id'), 404)
       }
+      // validate password
       if (!employeeData.comparePassword(req.body.password)) {
         return response.errorResponseData(res, 'You are unauthorized!', 401)
       }
+
+      // generate token
       const token = jwt.sign({ email: employeeData.email, firstName: employeeData.firstName, _id: employeeData._id, role: employeeData.roleId?.role }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' })
-      response.successResponseData(res, { _id: employeeData._id, email: employeeData.email, firstName: employeeData.firstName, token }, 200, 'Logged in successfully!')
+      employeeData.token = token
+
+      // transform response
+      const employeeSignIn = Transformer.employeeSignIn(employeeData)
+      response.successResponseData(res, employeeSignIn, 200, 'Logged in successfully!')
     } catch (error) {
       console.error(error)
       return response.errorResponseData(res, error)
@@ -58,7 +67,7 @@ module.exports = {
           return data
         })
       }
-      console.log('allSingleLeaves', allSingleLeaves)
+      // console.log('allSingleLeaves', allSingleLeaves)
 
       // manage request leave days from
       const fromLeaveDate = moment(req.body.leaveDateFrom)
@@ -69,7 +78,7 @@ module.exports = {
           requestedLeavesArray.push(moment(fromLeaveDate).format('YYYY-MM-DD'))
         }
       }
-      console.log('request', requestedLeavesArray)
+      // console.log('request', requestedLeavesArray)
 
       let validationFlag = false
       if (allSingleLeaves && allSingleLeaves.length && requestedLeavesArray && requestedLeavesArray.length) {
@@ -80,7 +89,7 @@ module.exports = {
           return data
         })
       }
-      console.log('validation', validationFlag)
+      // console.log('validation', validationFlag)
       if (validationFlag === true) {
         return response.errorResponseData(res, 'Leave already added', 409)
       }
